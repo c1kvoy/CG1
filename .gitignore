@@ -1,0 +1,7 @@
+.venv/
+tests/
+input.mp4
+cg1/
+poetry.lock
+pyproject.toml
+.DS_Store
