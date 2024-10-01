@@ -7,7 +7,18 @@ from customtkinter import filedialog
 
 def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor):
     capturedVideo = cv.VideoCapture(inputFilePath)
-    fourcc = cv.VideoWriter_fourcc(*'mp4v')
+    extension = outputFilePath.rsplit('.', 1)[-1].lower()
+    
+    if extension == 'mp4':
+        fourcc = cv.VideoWriter_fourcc(*'mp4v')
+    elif extension == 'avi':
+        fourcc = cv.VideoWriter_fourcc(*'XVID')
+    elif extension == 'mov':
+        fourcc = cv.VideoWriter_fourcc(*'avc1')
+    elif extension == 'mkv':
+        fourcc = cv.VideoWriter_fourcc(*'XVID')
+    
+    
     outputVideo = cv.VideoWriter(outputFilePath, fourcc, 30.0, (int(capturedVideo.get(3)), int(capturedVideo.get(4))))
     while capturedVideo.isOpened():
         ret, frame = capturedVideo.read()
