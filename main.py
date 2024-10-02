@@ -39,16 +39,20 @@ def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor, width: int |
             
             if width and height:
                 frame = cv.resize(frame, (width, height))
-            
-            grayedFrame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-            blurredFrame = cv.GaussianBlur(grayedFrame, (5, 5), 0)
-            edges = cv.Canny(blurredFrame, 50, 150)
-            
-                
-            colored_edges = np.zeros_like(frame)
-            colored_edges[edges > 0] = choosenColor
-            highlighted_frame = cv.addWeighted(frame, 0.7, colored_edges, 0.5, 0)
-            outputVideo.write(highlighted_frame)
+            img = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+            blurred_img = cv.GaussianBlur(img, (5,5), 0)
+
+            gradient_x = cv.Sobel(blurred_img, cv.CV_64F, 1, 0, ksize=3)
+            gradient_y = cv.Sobel(blurred_img, cv.CV_64F, 0, 1, ksize=3)
+            gradient_magnitude = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
+
+            gradient_8bit = np.uint8(gradient_magnitude)
+
+            _, edges = cv.threshold(gradient_8bit, 120, 255, cv.THRESH_BINARY)
+            img_color = frame.copy()
+            img_color[edges > 0] = choosenColor
+            outputVideo.write(img_color)
             
             
         capturedVideo.release()
