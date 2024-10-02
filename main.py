@@ -54,9 +54,7 @@ def selectcmd():
     inputPath = filedialog.askopenfilename()
     outputPath = filedialog.asksaveasfilename()
     color = takecolor()
-    print(outputPath)
     outputPath += "." + inputPath.rsplit('.', 1)[1]
-    print(outputPath)
     mainfunc(inputPath, outputPath, color)
     return
     
