@@ -47,7 +47,7 @@ def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor, width: int |
                 
             colored_edges = np.zeros_like(frame)
             colored_edges[edges > 0] = choosenColor
-            highlighted_frame = cv.addWeighted(frame, 0.7, colored_edges, 0.3, 0)
+            highlighted_frame = cv.addWeighted(frame, 0.7, colored_edges, 0.5, 0)
             outputVideo.write(highlighted_frame)
             
             
