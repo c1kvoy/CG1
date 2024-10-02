@@ -5,7 +5,7 @@ from CTkColorPicker import CTkColorPicker
 from customtkinter import filedialog
 
 
-def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor):
+def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor, width: int | None = None, height:  int | None = None):
     capturedVideo = cv.VideoCapture(inputFilePath)
     extension = outputFilePath.rsplit('.', 1)[-1].lower()
     
@@ -18,12 +18,18 @@ def mainfunc(inputFilePath: str, outputFilePath: str, choosenColor):
     elif extension == 'mkv':
         fourcc = cv.VideoWriter_fourcc(*'XVID')
     
-    
-    outputVideo = cv.VideoWriter(outputFilePath, fourcc, 30.0, (int(capturedVideo.get(3)), int(capturedVideo.get(4))))
+    if width and height:
+        outputVideo = cv.VideoWriter(outputFilePath, fourcc, capturedVideo.get(cv.CAP_PROP_FPS), (width, height))
+    else:
+        outputVideo = cv.VideoWriter(outputFilePath, fourcc, capturedVideo.get(cv.CAP_PROP_FPS), (int(capturedVideo.get(3)), int(capturedVideo.get(4))))
     while capturedVideo.isOpened():
         ret, frame = capturedVideo.read()
         if not ret:
             break
+        
+        if width and height:
+            frame = cv.resize(frame, (width, height))
+        
         grayedFrame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         blurredFrame = cv.GaussianBlur(grayedFrame, (5, 5), 0)
         edges = cv.Canny(blurredFrame, 50, 150)
@@ -55,7 +61,14 @@ def selectcmd():
     outputPath = filedialog.asksaveasfilename()
     color = takecolor()
     outputPath += "." + inputPath.rsplit('.', 1)[1]
-    mainfunc(inputPath, outputPath, color)
+    try:
+        width = int(width_entry.get())
+        height = int(height_entry.get())
+        mainfunc(inputPath, outputPath, color, width, height)
+        
+    except ValueError:
+        mainfunc(inputPath, outputPath, color)
+        print("error with resolution input.")
     return
     
 
@@ -68,5 +81,16 @@ fileSelectButton.pack(pady=20)
 picker = CTkColorPicker(root, width=250)
 picker.pack(padx=10, pady=10)
 
+width_label = tk.CTkLabel(root, text="width:")
+width_label.pack(padx=10)
+
+width_entry = tk.CTkEntry(root)
+width_entry.pack(padx=10)
+
+height_label = tk.CTkLabel(root, text="height:")
+height_label.pack(padx=10)
+
+height_entry = tk.CTkEntry(root)
+height_entry.pack(padx=10)
 
 root.mainloop()
