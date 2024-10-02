@@ -1,7 +1,5 @@
 .venv/
 tests/
 cg1/
-poetry.lock
-pyproject.toml
 .DS_Store
 *.mp4
